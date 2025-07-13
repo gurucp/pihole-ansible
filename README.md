@@ -6,7 +6,7 @@ This project automates managing Pi-hole adlists (blocklists) using Ansible and `
 
 ## 🗂️ Project Structure
 
-
+vars # Variable 
 inventory # Ansible inventory file with Pi-hole host information
 
 manage_pihole_adlists.yml # Main Ansible playbook to manage adlists
@@ -40,30 +40,29 @@ README.md # This instructions file
 
 ### 1️⃣ Clone this repository
 
-```bash
+
 git clone https://github.com/YOUR_GITHUB_USERNAME/pihole-ansible.git
 cd pihole-ansible
+
 
 2️⃣ Update the inventory file
 Edit the inventory file to include your Pi-hole server's IP address and SSH user.
 
 Example:
-
-csharp
-Copy
-Edit
 [pihole]
 192.168.0.2 ansible_user=pi
+
+
+## Very Important:!!!!
+Edit vars.yml file 
+cleanup_adlists: true # If it is set to true it will remove all existing on your pihole and add new entries 
+cleanup_adlists: false # If it is set to false, it will not remove existing once rather it will add whatever in the addlists.yml
 
 
 3️⃣ Edit adlists.yml
 Add or remove blocklists as needed inside adlists.yml.
 
 Example snippet:
-
-yaml
-Copy
-Edit
 adlists:
   - "https://adaway.org/hosts.txt"
   - "https://v.firebog.net/hosts/AdguardDNS.txt"
@@ -71,9 +70,7 @@ adlists:
 
 
 4️⃣ Run the playbook
-bash
-Copy
-Edit
+
 ansible-playbook -i inventory manage_pihole_adlists.yml
 
 💥 What it does

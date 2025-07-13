@@ -1,36 +1,27 @@
 ---
-- name: Manage Pi-hole adlists via sqlite3
+- name: Manage Pi-hole adlists
   hosts: pihole
-  become: yes
-
+  become: true
   vars_files:
-    - adlists.yml
+    - vars.yml
 
   tasks:
+
     - name: Ensure sqlite3 is installed
-      apt:
+      ansible.builtin.package:
         name: sqlite3
         state: present
 
-    - name: Remove all existing adlists
-      shell: "sqlite3 /etc/pihole/gravity.db 'DELETE FROM adlist;'"
-      when: adlists | length > 0
+    - name: Remove all existing adlists if cleanup is enabled
+      ansible.builtin.shell: "sqlite3 /etc/pihole/gravity.db 'DELETE FROM adlist;'"
+      when: cleanup_adlists | bool
 
-    - name: Insert new adlists into gravity.db
-      shell: |
-        sqlite3 /etc/pihole/gravity.db "INSERT OR IGNORE INTO adlist (address, enabled, comment) VALUES ('{{ item }}', 1, 'Added via Ansible');"
+    - name: Insert adlist into gravity.db
+      ansible.builtin.shell: "sqlite3 /etc/pihole/gravity.db \"INSERT OR IGNORE INTO adlist (address, enabled, comment) VALUES ('{{ item }}', 1, 'Added via Ansible');\""
       loop: "{{ adlists }}"
-      when: adlists | length > 0
+      args:
+        executable: /bin/bash
 
     - name: Update Pi-hole gravity
-      shell: pihole -g
-      when: adlists | length > 0
-
-    - name: Show current adlists (debug)
-      shell: "sqlite3 /etc/pihole/gravity.db 'SELECT id, address FROM adlist;'"
-      register: adlist_output
-
-    - name: Print adlists
-      debug:
-        var: adlist_output.stdout_lines
+      ansible.builtin.shell: "pihole -g"
 
