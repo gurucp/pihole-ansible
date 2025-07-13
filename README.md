@@ -1,3 +1,17 @@
+# 🚀 Pi-hole Adlists Automation with Ansible
+
+This project automates managing Pi-hole adlists (blocklists) using Ansible and `sqlite3`. It allows you to keep your blocklists organized in a separate YAML file and deploy them easily to your Pi-hole server.
+
+---
+
+## 🗂️ Project Structure
+
+
+inventory # Ansible inventory file with Pi-hole host information
+manage_pihole_adlists.yml # Main Ansible playbook to manage adlists
+adlists.yml # YAML file containing your blocklists
+README.md # This instructions file
+
 
 ---
 
@@ -26,4 +40,74 @@
 ```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/pihole-ansible.git
 cd pihole-ansible
+
+2️⃣ Update the inventory file
+Edit the inventory file to include your Pi-hole server's IP address and SSH user.
+
+Example:
+
+csharp
+Copy
+Edit
+[pihole]
+192.168.0.2 ansible_user=pi
+
+
+3️⃣ Edit adlists.yml
+Add or remove blocklists as needed inside adlists.yml.
+
+Example snippet:
+
+yaml
+Copy
+Edit
+adlists:
+  - "https://adaway.org/hosts.txt"
+  - "https://v.firebog.net/hosts/AdguardDNS.txt"
+  # Add more as needed
+
+
+4️⃣ Run the playbook
+bash
+Copy
+Edit
+ansible-playbook -i inventory manage_pihole_adlists.yml
+
+💥 What it does
+Ensures sqlite3 is installed on your Pi-hole host
+
+Optionally removes existing adlists (if cleanup step enabled)
+
+Inserts all blocklists from adlists.yml into Pi-hole's database
+
+Updates Pi-hole gravity to apply new lists
+
+Prints current adlists for verification
+
+
+Optional: Cleanup existing adlists
+If you want to reset and remove all existing adlists before adding new ones, make sure the cleanup task is enabled in manage_pihole_adlists.yml.
+
+❤️ Credits
+Inspired by community-maintained blocklists, including:
+
+Hagezi
+
+Firebog
+
+AdGuard
+
+Perflyst
+
+and many more
+
+
+License
+This project is licensed under the MIT License. See LICENSE for details.
+
+
+⭐ Contributing
+Feel free to open issues or pull requests to improve or update blocklists and tasks.
+
+
 

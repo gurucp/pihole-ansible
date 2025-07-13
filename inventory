@@ -1,2 +1,2 @@
 [pihole]
-192.168.0.2 ansible_user=gurucp
+192.168.0.2 ansible_user=<user ID on Pi or pihole server>
