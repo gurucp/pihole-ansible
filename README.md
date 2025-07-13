@@ -41,7 +41,7 @@ README.md # This instructions file
 ### 1️⃣ Clone this repository
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/pihole-ansible.git
+git clone https://github.com/gurucp/pihole-ansible.git
 cd pihole-ansible
 ```
 
