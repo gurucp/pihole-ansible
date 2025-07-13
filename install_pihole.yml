@@ -1,0 +1,17 @@
+---
+- name: Install Pi-hole
+  hosts: pihole
+  become: true
+
+  tasks:
+    - name: Install Pi-hole using unattended script
+      ansible.builtin.shell: |
+        curl -sSL https://install.pi-hole.net | bash /dev/stdin --unattended
+      args:
+        creates: /etc/pihole/pihole-FTL.conf
+
+    - name: Install sqlite3 for database updates
+      ansible.builtin.package:
+        name: sqlite3
+        state: present
+
