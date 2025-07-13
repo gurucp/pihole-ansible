@@ -40,38 +40,42 @@ README.md # This instructions file
 
 ### 1️⃣ Clone this repository
 
-
+```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/pihole-ansible.git
 cd pihole-ansible
-
+```
 
 2️⃣ Update the inventory file
 Edit the inventory file to include your Pi-hole server's IP address and SSH user.
 
 Example:
+```bash
 [pihole]
 192.168.0.2 ansible_user=pi
-
+```
 
 ## Very Important:!!!!
+```bash
 Edit vars.yml file 
 cleanup_adlists: true # If it is set to true it will remove all existing on your pihole and add new entries 
 cleanup_adlists: false # If it is set to false, it will not remove existing once rather it will add whatever in the addlists.yml
-
+```
 
 3️⃣ Edit adlists.yml
 Add or remove blocklists as needed inside adlists.yml.
 
 Example snippet:
+```bash
 adlists:
   - "https://adaway.org/hosts.txt"
   - "https://v.firebog.net/hosts/AdguardDNS.txt"
   # Add more as needed
-
+```
 
 4️⃣ Run the playbook
-
+```bash
 ansible-playbook -i inventory manage_pihole_adlists.yml
+```
 
 💥 What it does
 Ensures sqlite3 is installed on your Pi-hole host
@@ -85,8 +89,6 @@ Updates Pi-hole gravity to apply new lists
 Prints current adlists for verification
 
 
-Optional: Cleanup existing adlists
-If you want to reset and remove all existing adlists before adding new ones, make sure the cleanup task is enabled in manage_pihole_adlists.yml.
 
 ❤️ Credits
 Inspired by community-maintained blocklists, including:
