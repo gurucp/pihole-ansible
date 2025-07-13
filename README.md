@@ -8,8 +8,11 @@ This project automates managing Pi-hole adlists (blocklists) using Ansible and `
 
 
 inventory # Ansible inventory file with Pi-hole host information
+
 manage_pihole_adlists.yml # Main Ansible playbook to manage adlists
+
 adlists.yml # YAML file containing your blocklists
+
 README.md # This instructions file
 
 
