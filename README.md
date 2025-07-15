@@ -13,6 +13,7 @@ Post install screenshot:
 
 ![A screenshot of my pihole](images/pihole_screen_shot.png)
 
+
 ---
 
 ## 🗂️ Project Structure
@@ -97,6 +98,17 @@ pihole_blocklists_cleanup: true    # Set to true if you are reconfiguring the pi
 ```bash
 ansible-playbook -i inventory manage_pihole_adlists.yml
 ```
+
+OOnce the installation completes successfully, you can access the Pi-hole web dashboard at:
+
+http://<IP address>/admin
+
+**Login Details:**
+- **Username:** admin
+- **Password:** As configured in your `vars.yml` file (`pihole_web_password`)
+  - *Default password:* `testpass123` (unless you changed it in `vars.yml`)
+
+> **Tip:** For security, update your password in `vars.yml` after
 
 ❤️ Credits
 Inspired by community-maintained blocklists, including:
