@@ -1,17 +1,73 @@
 ---
-- name: Install Pi-hole
+- name: Install and configure Pi-hole
   hosts: pihole
   become: true
+  vars_files:
+    - vars.yml
 
   tasks:
-    - name: Install Pi-hole using unattended script
-      ansible.builtin.shell: |
-        curl -sSL https://install.pi-hole.net | bash /dev/stdin --unattended
-      args:
-        creates: /etc/pihole/pihole-FTL.conf
 
-    - name: Install sqlite3 for database updates
-      ansible.builtin.package:
-        name: sqlite3
+    - name: Detect first non-loopback interface
+      set_fact:
+        pihole_interface: "{{ ansible_facts['interfaces'] | difference(['lo']) | first }}"
+
+    - name: Set IPv4 address fact
+      set_fact:
+        pihole_ipv4: "{{ ansible_default_ipv4.address }}"
+    
+    - name: Create pihole group
+      ansible.builtin.group:
+        name: pihole
         state: present
+        
+    - name: Create pihole user
+      ansible.builtin.user:
+        name: pihole
+        home: "/home/pihole"
+        shell: "/usr/sbin/nologin"
+        comment: "PiHole"
+        group: pihole
+        password: "*"
+        state: present
+        remove: true
+        force: true
 
+    - name: Ensure /etc/pihole directory exists
+      ansible.builtin.file:
+        path: /etc/pihole
+        state: directory
+        owner: pihole
+        group: pihole
+        mode: "0775"
+
+    - name: Copy pre-configured pihole.toml
+      ansible.builtin.template:
+        src: pihole.toml.j2
+        dest: /etc/pihole/pihole.toml
+        owner: pihole
+        group: pihole
+        mode: "0644"
+
+    - name: Download Pi-hole install script
+      ansible.builtin.get_url:
+        url: https://install.pi-hole.net
+        dest: /tmp/basic-install.sh
+        mode: "0755"
+
+    - name: Install Pi-hole unattended
+      ansible.builtin.command: bash /tmp/basic-install.sh --unattended
+      args:
+        creates: /etc/systemd/system/pihole-FTL.service
+
+    - name: Set Pi-hole web password
+      ansible.builtin.command: pihole setpassword "{{ pihole_web_password | default('') }}"
+
+    - name: Print Pi-hole version and IP
+      ansible.builtin.shell: |
+        echo "Pi-hole installed at IP: {{ pihole_ipv4 }}"
+        pihole -v
+      register: pihole_version
+
+    - name: Show Pi-hole version output
+      ansible.builtin.debug:
+        var: pihole_version.stdout_lines

@@ -1,30 +1,42 @@
-# 🚀 Pi-hole Adlists Automation with Ansible
+# 🚀 Pi-hole Install and configure Automation with Ansible
 
-This project automates managing Pi-hole adlists (blocklists) using Ansible and `sqlite3`. It allows you to keep your blocklists organized in a separate YAML file and deploy them easily to your Pi-hole server.
+This project automates Installing and configuring using Ansible. 
+
+What does this playbook handle?
+- Installs Pi-hole
+- Adds blacklists (URLs are listed in `adlists.yml`)
+- Installs nftables and configures rules to keep the Pi-hole box safe and secure
+- Optimizes performance by configuring Unbound DNS and various kernel parameters
+- If you already have adlists configured, you can choose to remove all existing ones and recreate the list
 
 ---
 
 ## 🗂️ Project Structure
 
-vars # Variable 
-inventory # Ansible inventory file with Pi-hole host information
-
-manage_pihole_adlists.yml # Main Ansible playbook to manage adlists
-
-adlists.yml # YAML file containing your blocklists
-
-README.md # This instructions file
+- `vars.yml` — Variable definitions
+- `inventory` — Ansible inventory file with Pi-hole host information
+- `manage_pihole_adlists.yml` — Playbook to manage Pi-hole adlists
+- `adlists.yml` — YAML file containing blocklists
+- `README.md` — Project instructions
+- `configure_nftables.yml` — Playbook to configure nftables firewall rules
+- `install_pihole.yml` — Playbook to install Pi-hole
+- `configure_pihole.yml` — Playbook to configure Pi-hole with blocklists
+- `optimize_pihole.yml` — Playbook to optimize
 
 
 ---
 
 ## 💡 Features
 
-✅ Manage large lists of blocklists easily  
-✅ Store blocklists in a separate YAML file for better organization  
-✅ Automatically install required dependencies (e.g., sqlite3)  
-✅ Automatically update Pi-hole gravity after changes  
-✅ Clean and reusable structure, ready for Git
+- Automated Pi-hole installation and configuration
+- Efficient management of large blocklists
+- Blocklists stored in a dedicated YAML file (`adlists.yml`)
+- Option to clean up and recreate adlists from scratch
+- Automatic installation of required dependencies (e.g., sqlite3)
+- Enhanced security with nftables firewall rules
+- Optimized DNS performance using Unbound and kernel tweaks
+- Automatic updates to Pi-hole gravity after changes
+- Modular design for easy recovery from SD card corruption
 
 ---
 
@@ -32,7 +44,7 @@ README.md # This instructions file
 
 - Ansible installed on your local machine (e.g., `sudo apt install ansible`)
 - SSH access to your Pi-hole host
-- Pi-hole server (tested on Raspberry Pi OS and Ubuntu)
+- Pi-hole server (tested on Raspberry Pi OS and Ubuntu), Ubuntu 24/22 VM
 
 ---
 
@@ -71,24 +83,16 @@ adlists:
   - "https://v.firebog.net/hosts/AdguardDNS.txt"
   # Add more as needed
 ```
+Update the vars.yml file 
+
+pihole_web_password: "testpass123" # Set password here 
+pihole_blocklists_cleanup: true    # Set to true if you are reconfiguring the pihole and would like to       remove existing addlist 
+
 
 4️⃣ Run the playbook
 ```bash
 ansible-playbook -i inventory manage_pihole_adlists.yml
 ```
-
-💥 What it does
-Ensures sqlite3 is installed on your Pi-hole host
-
-Optionally removes existing adlists (if cleanup step enabled)
-
-Inserts all blocklists from adlists.yml into Pi-hole's database
-
-Updates Pi-hole gravity to apply new lists
-
-Prints current adlists for verification
-
-
 
 ❤️ Credits
 Inspired by community-maintained blocklists, including:

@@ -7,9 +7,14 @@
     - adlists.yml
 
   tasks:
+    - name: Install sqlite3 package
+      ansible.builtin.apt:
+        name: sqlite3
+        state: present
+
     - name: Remove all existing adlists if cleanup enabled
       ansible.builtin.shell: "sqlite3 /etc/pihole/gravity.db 'DELETE FROM adlist;'"
-      when: cleanup_adlists | bool
+      when: pihole_blocklists_cleanup | bool
 
     - name: Insert adlists into gravity.db
       ansible.builtin.shell: "sqlite3 /etc/pihole/gravity.db \"INSERT OR IGNORE INTO adlist (address, enabled, comment) VALUES ('{{ item }}', 1, 'Added via Ansible');\""
@@ -24,4 +29,3 @@
       ansible.builtin.service:
         name: pihole-FTL
         state: restarted
-

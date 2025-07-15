@@ -1,0 +1,126 @@
+---
+- name: Optimize and secure Pi-hole host
+  hosts: all
+  become: true
+  vars_files:
+    - vars.yml
+
+  tasks:
+
+    - name: Install Unbound and related tools
+      apt:
+        name:
+          - unbound
+          - dnsutils
+        state: present
+        update_cache: yes
+
+    - name: Copy Unbound configuration file
+      copy:
+        dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+        content: |
+          server:
+            verbosity: 0
+            interface: 127.0.0.1
+            port: 5335
+            do-ip4: yes
+            do-udp: yes
+            do-tcp: yes
+            root-hints: "/var/lib/unbound/root.hints"
+            harden-glue: yes
+            harden-dnssec-stripped: yes
+            use-caps-for-id: no
+            edns-buffer-size: 1232
+            prefetch: yes
+            num-threads: 2
+            so-rcvbuf: 1m
+            so-sndbuf: 1m
+            cache-min-ttl: 3600
+            cache-max-ttl: 86400
+            infra-cache-slabs: 4
+            rrset-cache-slabs: 4
+            msg-cache-slabs: 4
+            key-cache-slabs: 4
+            rrset-cache-size: 100m
+            msg-cache-size: 50m
+
+    - name: Download latest root hints
+      get_url:
+        url: https://www.internic.net/domain/named.cache
+        dest: /var/lib/unbound/root.hints
+
+    - name: Restart Unbound
+      systemd:
+        name: unbound
+        state: restarted
+        enabled: yes
+      failed_when: false
+      ignore_errors: yes
+
+    - name: Configure Pi-hole to use Unbound (127.0.0.1#5335)
+      command: pihole -a setdns 127.0.0.1#5335
+      
+    - name: Tune sysctl for network performance
+      copy:
+        dest: /etc/sysctl.d/99-pihole.conf
+        content: |
+          net.core.somaxconn = 1024
+          net.ipv4.tcp_tw_reuse = 1
+          net.ipv4.ip_local_port_range = 1024 65000
+          net.ipv4.tcp_fin_timeout = 10
+
+    - name: Reload sysctl settings
+      command: sysctl --system
+
+    - name: Configure log rotation for Pi-hole log
+      copy:
+        dest: /etc/logrotate.d/pihole
+        content: |
+          /var/log/pihole.log {
+              daily
+              rotate 7
+              compress
+              delaycompress
+              missingok
+              notifempty
+              create 0640 pihole pihole
+              sharedscripts
+              postrotate
+                  systemctl reload pihole-FTL > /dev/null 2>&1 || true
+              endscript
+          }
+
+    - name: Install unattended-upgrades
+      apt:
+        name: unattended-upgrades
+        state: present
+
+    - name: Enable automatic security updates
+      copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Download-Upgradeable-Packages "1";
+          APT::Periodic::AutocleanInterval "7";
+          APT::Periodic::Unattended-Upgrade "1";
+
+    - name: Enable unattended-upgrades service
+      systemd:
+        name: unattended-upgrades
+        enabled: yes
+        state: started
+
+    - name: Increase Unbound socket buffer limits via sysctl
+      copy:
+        dest: /etc/sysctl.d/99-unbound.conf
+        content: |
+          net.core.rmem_max = 1048576
+          net.core.wmem_max = 1048576
+
+    - name: Reload sysctl settings (Unbound buffers)
+      command: sysctl --system
+
+    - name: Restart Unbound to apply new buffer settings
+      systemd:
+        name: unbound
+        state: restarted

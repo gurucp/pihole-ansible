@@ -1,0 +1,61 @@
+---
+- name: Configure nftables firewall for Pi-hole
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install nftables
+      ansible.builtin.apt:
+        name: nftables
+        state: present
+
+    - name: Enable and start nftables service
+      ansible.builtin.systemd:
+        name: nftables
+        enabled: true
+        state: started
+
+    - name: Flush existing nftables rules
+      ansible.builtin.command: nft flush ruleset
+
+    - name: Deploy nftables rules
+      ansible.builtin.copy:
+        dest: /etc/nftables.conf
+        content: |
+          table inet filter {
+            chain input {
+              type filter hook input priority 0;
+
+              # Accept loopback
+              iif "lo" accept
+
+              # Accept established and related
+              ct state established,related accept
+
+              # Allow SSH
+              tcp dport 22 accept
+
+              # Allow DNS (UDP & TCP)
+              tcp dport 53 accept
+              udp dport 53 accept
+
+              # Allow HTTP and HTTPS
+              tcp dport 80 accept
+              tcp dport 443 accept
+
+              # Drop everything else
+              counter drop
+            }
+            chain forward {
+              type filter hook forward priority 0;
+              counter drop
+            }
+            chain output {
+              type filter hook output priority 0;
+              accept
+            }
+          }
+
+    - name: Reload nftables to apply new rules
+      ansible.builtin.command: nft -f /etc/nftables.conf
+

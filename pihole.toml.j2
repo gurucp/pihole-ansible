@@ -1,0 +1,30 @@
+[pihole]
+FTLCONF_webserver_api_password = "{{ pihole_web_password }}"
+FTLport = 4711
+FTLinterface = "{{ pihole_interface }}"
+MAXDBDAYS = 30
+DBINTERVAL = 1
+DBIMPORT = true
+DBRELOAD = true
+REPLY_ADDR4 = "{{ pihole_ipv4 }}"
+BLOCKINGMODE = "null"
+
+[api]
+API_PORT = 80
+API_QUERY_LOG_SHOW = "all"
+API_PRIVACY_MODE = false
+
+[dns]
+BLOCK_IPV4 = "{{ pihole_ipv4 }}"
+BLOCK_IPV6 = ""
+upstreams = [
+  "8.8.8.8",
+  "8.8.4.4"
+]
+DNSSEC = true
+CACHE_SIZE = 10000
+CACHE_MIN_TTL = 3600
+CACHE_MAX_TTL = 86400
+
+[logging]
+QUERY_LOGGING = true

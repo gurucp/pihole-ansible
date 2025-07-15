@@ -1,4 +1,8 @@
 ---
 - import_playbook: install_pihole.yml
+
 - import_playbook: configure_pihole.yml
 
+- import_playbook: configure_nftables.yml
+
+- import_playbook: optimize_pihole.yml
