@@ -96,12 +96,12 @@ pihole_blocklists_cleanup: true    # Set to true if you are reconfiguring the pi
 
 4️⃣ Run the playbook
 ```bash
-ansible-playbook -i inventory manage_pihole_adlists.yml
+ansible-playbook -i inventory master_playbook.yml
 ```
 
-OOnce the installation completes successfully, you can access the Pi-hole web dashboard at:
+Once the installation completes successfully, you can access the Pi-hole web dashboard at:
 
-http://<IP address>/admin
+http://{IP address>}/admin
 
 **Login Details:**
 - **Username:** admin
