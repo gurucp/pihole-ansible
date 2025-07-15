@@ -1,4 +1,4 @@
-# 🚀 Pi-hole Install and configure Automation with Ansible
+# 🚀 Pi-hole V6.1.4 Install and configure Automation with Ansible
 
 This project automates Installing and configuring using Ansible. 
 
@@ -8,6 +8,10 @@ What does this playbook handle?
 - Installs nftables and configures rules to keep the Pi-hole box safe and secure
 - Optimizes performance by configuring Unbound DNS and various kernel parameters
 - If you already have adlists configured, you can choose to remove all existing ones and recreate the list
+
+Post install screenshot:
+
+![A screenshot of my pihole](images/pihole_screen_shot.png)
 
 ---
 
