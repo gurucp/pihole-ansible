@@ -1,4 +1,13 @@
 ---
+- name: Detect first non-loopback interface
+  ansible.builtin.set_fact:
+    pihole_interface: "{{ ansible_facts['interfaces'] | difference(['lo']) | first }}"
+
+- name: Set IPv4 address fact robustly
+  ansible.builtin.set_fact:
+    pihole_ipv4: "{{ ansible_facts['interfaces'][pihole_interface]['ipv4']['address'] | default(ansible_default_ipv4.address, true) }}"
+
+
 # Install required dependencies (curl and sudo)
 - name: Install dependencies
   ansible.builtin.apt:
@@ -7,6 +16,40 @@
       - sudo
     state: present
   become: true
+# Create pihole group
+- name: Ensure pihole group exists
+  ansible.builtin.group:
+    name: pihole
+    system: true
+
+# Need to create pihole user and group
+- name: Ensure pihole user and group exist
+  ansible.builtin.user:
+    name: pihole
+    group: pihole
+    shell: /usr/sbin/nologin
+    system: true
+    create_home: false
+
+# Create pihole directory under /etc
+- name: Ensure /etc/pihole directory exists
+  ansible.builtin.file:
+    path: /etc/pihole
+    state: directory
+    owner: pihole
+    group: pihole
+    mode: "0775"
+
+# Create pihole.toml. Else unattned install will fail as it
+# pihole.toml will have basic entry. After installing user can configure what is required
+# This is getting rendred from pihole.toml.j2 template. Please feel free to modify the template as per your requirements.
+- name: Copy pre-configured pihole.toml
+  ansible.builtin.template:
+    src: pihole.toml.j2
+    dest: /etc/pihole/pihole.toml
+    owner: pihole
+    group: pihole
+    mode: "0644"
 
 # Download official Pi-hole installer script
 - name: Download Pi-hole install script
@@ -23,6 +66,3 @@
       --unattended
   become: true
 
-# Include additional configuration tasks (adlists, etc.)
-- name: Include Pi-hole configuration tasks
-  ansible.builtin.include_tasks: configure.yml

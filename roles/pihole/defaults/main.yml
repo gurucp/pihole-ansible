@@ -23,6 +23,7 @@ pihole_adlists:
   - https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt
   
 
+
 # Default web admin password for Pi-hole dashboard. You can set any password you like.
 # Or you can change the password after the playbook has run by using the command: pihole setpassword "Your New Password"
 pihole_web_password: "testpass123"
