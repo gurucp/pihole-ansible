@@ -66,3 +66,14 @@
       --unattended
   become: true
 
+# Let us set the web password
+- name: Check current Pi-hole web password
+  ansible.builtin.command:
+    cmd: "grep '^WEBPASSWORD=' /etc/pihole/setupVars.conf | cut -d'=' -f2"
+  register: current_web_password
+  changed_when: false
+
+- name: Set Pi-hole web interface password
+  ansible.builtin.command:
+    cmd: "pihole-FTL --config webserver.api.password '{{ pihole_web_password }}'"
+  become: true
