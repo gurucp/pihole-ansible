@@ -123,11 +123,6 @@ Perflyst
 
 and many more
 
-
-License
-This project is licensed under the MIT License. See LICENSE for details.
-
-
 ⭐ Contributing
 Feel free to open issues or pull requests to improve or update blocklists and tasks.
 
