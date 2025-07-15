@@ -3,6 +3,14 @@
 Automate the installation and configuration of Pi-hole using Ansible. This role sets up Pi-hole in unattended mode, configures system users/groups, and prepares the required configuration files for a smooth deployment.
 
 ---
+## ⚠️ Supported Operating Systems
+
+This playbook is intended **only for Debian-based Linux distributions**, such as:
+
+- Ubuntu (all recent LTS releases)
+- Debian (stable/testing)
+
+💡 Other distributions (e.g., RHEL, CentOS, Fedora) are **not supported or tested**, and may require adjustments (e.g., using `yum/dnf` instead of `apt`).
 
 ## 🚀 Features
 
