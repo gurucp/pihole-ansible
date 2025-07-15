@@ -109,7 +109,7 @@ http://<your_pi-hole_ip>/admin
 ```
 
 - **Username:** admin
-- **Password:** As set in `pihole.toml.j2` (`FTLCONF_webserver_api_password`), default is usually `testpass123` unless changed.
+- **Password:** As set in `pihole.toml.j2` (`pihole_web_password`), default is usually `testpass123` unless changed.
 
 ---
 

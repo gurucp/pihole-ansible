@@ -65,15 +65,20 @@
       /tmp/pihole-install.sh
       --unattended
   become: true
+  register: pihole_install
 
-# Let us set the web password
-- name: Check current Pi-hole web password
-  ansible.builtin.command:
-    cmd: "grep '^WEBPASSWORD=' /etc/pihole/setupVars.conf | cut -d'=' -f2"
-  register: current_web_password
-  changed_when: false
+# Display the installation result
+- name: Display Pi-hole installation result
+  ansible.builtin.debug:
+    var: pihole_install.stdout_lines
+
 
 - name: Set Pi-hole web interface password
   ansible.builtin.command:
     cmd: "pihole-FTL --config webserver.api.password '{{ pihole_web_password }}'"
   become: true
+
+# Call configure.yml to configure adlists
+- name: Configure Pi-hole adlists
+  ansible.builtin.include_tasks: configure.yml
+  when: pihole_install_web | bool

@@ -8,7 +8,7 @@
   ansible.builtin.shell: "sqlite3 /etc/pihole/gravity.db 'DELETE FROM adlist;'"
   when: pihole_blocklists_cleanup | bool
 
-- name: Insert adlists into gravity.db
+- name: Insert default adlists into gravity.db
   ansible.builtin.shell: "sqlite3 /etc/pihole/gravity.db \"INSERT OR IGNORE INTO adlist (address, enabled, comment) VALUES ('{{ item }}', 1, 'Added via Ansible');\""
   loop: "{{ pihole_adlists }}"
   args:
@@ -16,3 +16,4 @@
 
 - name: Update Pi-hole gravity
   ansible.builtin.shell: "pihole -g"
+
