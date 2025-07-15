@@ -1,0 +1,28 @@
+---
+# Install required dependencies (curl and sudo)
+- name: Install dependencies
+  ansible.builtin.apt:
+    name:
+      - curl
+      - sudo
+    state: present
+  become: true
+
+# Download official Pi-hole installer script
+- name: Download Pi-hole install script
+  ansible.builtin.get_url:
+    url: https://install.pi-hole.net
+    dest: /tmp/pihole-install.sh
+    mode: '0755'
+
+# Run Pi-hole install script in unattended mode with configured web password
+- name: Run Pi-hole install script (unattended)
+  ansible.builtin.command:
+    cmd: >
+      /tmp/pihole-install.sh
+      --unattended
+  become: true
+
+# Include additional configuration tasks (adlists, etc.)
+- name: Include Pi-hole configuration tasks
+  ansible.builtin.include_tasks: configure.yml

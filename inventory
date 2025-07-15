@@ -1,3 +1,0 @@
-[pihole]
-192.168.0.111 ansible_user=gurucp ansible_ssh_private_key_file=/home/gurucp/.ssh/id_ed25519
-

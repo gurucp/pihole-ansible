@@ -1,0 +1,2 @@
+[pihole]
+192.168.122.139 ansible_user=gurucp

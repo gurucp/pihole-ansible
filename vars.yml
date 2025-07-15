@@ -1,6 +1,0 @@
----
-pihole_install_web: true
-pihole_lighttpd_enabled: false
-pihole_web_password: "testpass123"
-pihole_blocklists_cleanup: true
-FTLCONF_webserver_api_password: "testpass123"
