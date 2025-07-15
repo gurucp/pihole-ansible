@@ -14,6 +14,7 @@
   args:
     executable: /bin/bash
 
+# Set Pi-hole web interface password
 - name: Update Pi-hole gravity
   ansible.builtin.shell: "pihole -g"
 

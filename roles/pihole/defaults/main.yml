@@ -21,8 +21,6 @@ pihole_adlists:
   - https://v.firebog.net/hosts/Prigent-Ads.txt
 
   - https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt
-  
-
 
 # Default web admin password for Pi-hole dashboard. You can set any password you like.
 # Or you can change the password after the playbook has run by using the command: pihole setpassword "Your New Password"

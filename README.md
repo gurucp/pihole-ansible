@@ -41,7 +41,6 @@ roles/
 You can customize Pi-hole settings by editing `pihole.toml.j2` in the `templates` directory.  
 Common variables include:
 
-- `FTLCONF_webserver_api_password`: Web dashboard password
 - `FTLinterface`: Network interface Pi-hole listens on
 - `REPLY_ADDR4`: IPv4 address for Pi-hole
 - DNS upstreams, blocking mode, logging options, etc.
@@ -85,12 +84,37 @@ Edit the `inventory` file to list your Pi-hole host(s):
 
 ```ini
 [pihole]
-192.168.1.100 ansible_user=pi
+192.168.1.100 ansible_user= "User Name on the target node"
 ```
 
 ### 3. Customize configuration (optional)
 
-Edit `roles/pihole/templates/pihole.toml.j2` to set your desired Pi-hole options.
+Edit `roles/pihole/defaults/main.yml` and configure the following parameters:
+
+- `pihole_web_password`: **(string)**  
+  The password to access the Pi-hole web interface.  
+  Example: `"testpass123"`
+
+- `pihole_blocklists_cleanup`: **(boolean)**  
+  Set to `true` if you want Ansible to remove all existing adlists before adding your new lists.  
+  Example: `true`
+
+- `pihole_adlists`: **(list)**  
+  Specify the adlists (blocklists) you want Pi-hole to use.  
+  You can add, remove, or modify these URLs to suit your needs.  
+  Example:
+
+  ```yaml
+  pihole_adlists:
+    - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+    - https://mirror1.malwaredomains.com/files/justdomains
+    - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+    - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+
+
+Edit `roles/pihole/templates/pihole.toml.j2` to customize your desired Pi-hole configuration options, such as network interface, DNS settings, blocking mode, or cache behavior.  
+
+💡 **Tip:** Use Jinja variables (e.g., `{{ pihole_ipv4 }}` or `{{ pihole_web_password }}`) to make your template dynamic and flexible.
 
 ### 4. Run the playbook
 
